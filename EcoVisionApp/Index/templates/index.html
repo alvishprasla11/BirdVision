@@ -1,10 +1,68 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Ecovision</title>
-    </head>
-    <body>
-            Hello world!
-    </body>
-        
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoVision</title>
+  
+</head>
+<body>
+
+<h1>EcoVision</h1>
+
+<div id="errorMessage" class="error-message hidden"></div>
+<button id="permissionBtn" class="hidden">Enable Camera Access</button>
+
+<video id="video" width="640" height="480" autoplay></video>
+<br>
+<button id="captureBtn">Capture Image</button>
+<br><br>
+<canvas id="canvas" width="640" height="480"></canvas>
+<img id="capturedImage" alt="Captured Image" width="640">
+
+<script>
+  const video = document.getElementById('video');
+  const captureBtn = document.getElementById('captureBtn');
+  const canvas = document.getElementById('canvas');
+  const capturedImage = document.getElementById('capturedImage');
+  const ctx = canvas.getContext('2d');
+  const errorMessage = document.getElementById('errorMessage');
+  const permissionBtn = document.getElementById('permissionBtn');
+
+  // Function to start video stream from camera
+  async function startCamera() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      video.srcObject = stream;
+      // Hide error message and permission button if camera starts successfully
+      errorMessage.classList.add('hidden');
+      permissionBtn.classList.add('hidden');
+    } catch (err) {
+      console.error('Error accessing the camera: ', err);
+      // Show error message and permission button
+      errorMessage.textContent = 'Camera access is blocked. Please enable camera access to use this feature.';
+      errorMessage.classList.remove('hidden');
+      permissionBtn.classList.remove('hidden');
+    }
+  }
+
+  permissionBtn.addEventListener('click', () => {
+    startCamera();
+  });
+
+  captureBtn.addEventListener('click', () => {
+    if (!video.srcObject) {
+      errorMessage.textContent = 'Please enable camera access first';
+      errorMessage.classList.remove('hidden');
+      return;
+    }
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const imageData = canvas.toDataURL('image/png');
+    capturedImage.src = imageData;
+  });
+
+  window.onload = startCamera;
+</script>
+
+</body>
 </html>
