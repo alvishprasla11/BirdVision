@@ -1,10 +1,38 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EcoVision</title>
-  
+  <style>
+    video {
+      border: 1px solid black;
+    }
+    canvas {
+      display: none;
+    }
+    .error-message {
+      color: red;
+      margin: 10px 0;
+    }
+    #permissionBtn {
+      padding: 10px 20px;
+      margin: 10px 0;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #permissionBtn:hover {
+      background-color: #45a049;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
 
@@ -50,6 +78,7 @@
     startCamera();
   });
 
+  // Capture image when the button is clicked
   captureBtn.addEventListener('click', () => {
     if (!video.srcObject) {
       errorMessage.textContent = 'Please enable camera access first';
