@@ -693,6 +693,40 @@ body, html {
     overflow: hidden;
 }
 
+.camera-option h3 {
+    margin-bottom: 1.5rem;
+}
+
+.camera-option .error-message {
+    margin: 1rem 0;
+}
+
+.camera-option #permissionBtn {
+    margin: 1rem 0;
+}
+
+.camera-option .media-container {
+    width: 100%;
+    max-width: 640px;
+    margin: 1.5rem auto;
+    overflow: hidden;
+}
+
+.camera-option #video {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    border-radius: 10px;
+    background-color: #000;
+    margin-bottom: 1rem;
+}
+
+.camera-option #captureBtn {
+    margin: 1rem 0;
+    width: 100%;
+    justify-content: center;
+}
+
 /* Update media queries for better responsiveness */
 @media (max-width: 768px) {
     .media-container {
