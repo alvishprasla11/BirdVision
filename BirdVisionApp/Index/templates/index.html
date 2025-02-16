@@ -49,8 +49,6 @@
 <script>
   const video = document.getElementById('video');
   const captureBtn = document.getElementById('captureBtn');
-  const canvas = document.getElementById('canvas');
-  const capturedImage = document.getElementById('capturedImage');
   const ctx = canvas.getContext('2d');
   const errorMessage = document.getElementById('errorMessage');
   const permissionBtn = document.getElementById('permissionBtn');
@@ -79,23 +77,30 @@
   // Capture image when the button is clicked and save it automatically
   captureBtn.addEventListener('click', () => {
     if (!video.srcObject) {
-      errorMessage.textContent = 'Please enable camera access first';
-      errorMessage.classList.remove('hidden');
-      return;
+        errorMessage.textContent = 'Please enable camera access first';
+        errorMessage.classList.remove('hidden');
+        return;
     }
-    // Capture the image
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const imageData = canvas.toDataURL('image/png');
-    capturedImage.src = imageData;
+    const imageData = canvas.toDataURL('image/png');  // Get the image data as a base64 URL
 
-    // Create a link to download the image
-    const link = document.createElement('a');
-    link.href = imageData;
-    link.download = 'captured_image.png';
+    // Create a File object from the base64 image data
+    const byteString = atob(imageData.split(',')[1]);  // Decode base64 to binary
+    const arrayBuffer = new ArrayBuffer(byteString.length);  // Create an ArrayBuffer
+    const uint8Array = new Uint8Array(arrayBuffer);  // Create a Uint8Array
+    for (let i = 0; i < byteString.length; i++) {
+        uint8Array[i] = byteString.charCodeAt(i);  // Convert each character to byte
+    }
 
-    // Trigger the download by clicking the link programmatically
-    link.click();
-  });
+    // Create a Blob object from the Uint8Array (for use in file functions)
+    const blob = new Blob([uint8Array], { type: 'image/png' });
+    // Create a File object from the Blob
+    const file = new File([blob], 'captured_image.png', { type: 'image/png' });
+
+    // Call the readURL function with the created File object
+    const fileInput = { files: [file] };  // Mocking the input.files property
+    readURL(fileInput);  // Pass the file to the readURL function
+});
 
   window.onload = startCamera;
 </script>
@@ -106,29 +111,6 @@
 
 <br>
 
-<script>
-  const saveBtn = document.getElementById('saveBtn');
-
-  captureBtn.addEventListener('click', () => {
-    if (!video.srcObject) {
-      errorMessage.textContent = 'Please enable camera access first';
-      errorMessage.classList.remove('hidden');
-      return;
-    }
-
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const imageData = canvas.toDataURL('image/png');
-    capturedImage.src = imageData;
-
-    // Automatically save the image without the need for a save button
-    const link = document.createElement('a');
-    link.href = imageData;
-    link.download = 'captured_image.png';
-
-    // Trigger the download by clicking the link programmatically
-    link.click();
-  });
-</script>
 
 <img id="imagePreview" style="height: 300px;" />
 <br>
