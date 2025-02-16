@@ -2,262 +2,344 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bird Vision</title>
-  <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BirdVision - AI-Powered Bird Identification</title>
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="logo">
+                <i class="fas fa-dove"></i>
+                <span>BirdVision</span>
+            </div>
+            <div class="nav-links">
+                <a href="#about">About</a>
+                <a href="#features">Features</a>
+                <a href="#identify">Identify</a>
+            </div>
+        </div>
+    </nav>
 
-<div class="main-container fade-in">
-    <h1>Bird Vision</h1>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Discover the World of Birds</h1>
+            <p>Use AI to identify birds and learn about their conservation status</p>
+            <a href="#identify" class="cta-button">Start Identifying</a>
+        </div>
+    </section>
 
-    <div id="errorMessage" class="error-message hidden"></div>
-    <button id="permissionBtn" class="button hidden">Enable Camera Access</button>
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <div class="section-content">
+            <h2>About BirdVision</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-camera"></i>
+                    <h3>Instant Recognition</h3>
+                    <p>Advanced AI technology to identify birds in real-time</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-leaf"></i>
+                    <h3>Conservation Focus</h3>
+                    <p>Learn about bird conservation status and environmental impact</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-comments"></i>
+                    <h3>Interactive Chat</h3>
+                    <p>Ask questions and learn more about identified birds</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <div class="media-container">
-        <video id="video" width="640" height="480" autoplay></video>
-        <button id="captureBtn" class="button">Capture Image</button>
-        <canvas id="canvas" width="640" height="480"></canvas>
-    </div>
+    <!-- Main Identification Section -->
+    <section id="identify" class="identify-section">
+        <div class="main-container fade-in">
+            <h2>Identify Birds</h2>
+            <div class="identification-options">
+                <div class="option-card camera-option">
+                    <h3><i class="fas fa-camera"></i> Use Camera</h3>
+                    <div id="errorMessage" class="error-message hidden"></div>
+                    <button id="permissionBtn" class="button hidden">
+                        <i class="fas fa-video"></i> Enable Camera
+                    </button>
+                    <div class="media-container">
+                        <video id="video" width="640" height="480" autoplay></video>
+                        <button id="captureBtn" class="button">
+                            <i class="fas fa-camera"></i> Capture Image
+                        </button>
+                        <canvas id="canvas" width="640" height="480"></canvas>
+                    </div>
+                </div>
 
-    <label for="imageUpload" class="upload-btn">
-        Upload Bird Image
-        <input id="imageUpload" type="file" accept="image/*" />
-    </label>
+                <div class="option-card upload-option">
+                    <h3><i class="fas fa-upload"></i> Upload Image</h3>
+                    <label for="imageUpload" class="upload-btn">
+                        <i class="fas fa-cloud-upload-alt"></i> Choose Image
+                        <input id="imageUpload" type="file" accept="image/*" />
+                    </label>
+                </div>
+            </div>
 
-    <img id="imagePreview" class="hidden" alt="Bird Preview" />
-    
-    <div id="label-container"></div>
-    
-    <div id="bird-info-container" class="hidden">
-        <h3>Bird Information</h3>
-        <div id="bird-name"></div>
-        <div id="bird-description"></div>
-        <button onclick="goToChat()" class="button chat-button">Continue to Chat</button>
-    </div>
-</div>
+            <div class="results-container">
+                <img id="imagePreview" class="hidden" alt="Bird Preview" />
+                <div id="loading-spinner" class="loading hidden">
+                    <div class="spinner"></div>
+                    <p>Analyzing image...</p>
+                </div>
+                <div id="label-container"></div>
+            </div>
+            
+            <div id="bird-info-container" class="hidden">
+                <div class="info-header">
+                    <i class="fas fa-feather"></i>
+                    <h3>Bird Information</h3>
+                </div>
+                <div id="bird-name"></div>
+                <div id="bird-description"></div>
+                <button onclick="goToChat()" class="button chat-button">
+                    <i class="fas fa-comments"></i> Continue to Chat
+                </button>
+            </div>
+        </div>
+    </section>
 
-<script>
-  const video = document.getElementById('video');
-  const captureBtn = document.getElementById('captureBtn');
-  const ctx = canvas.getContext('2d');
-  const errorMessage = document.getElementById('errorMessage');
-  const permissionBtn = document.getElementById('permissionBtn');
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>BirdVision</h4>
+                <p>AI-powered bird identification and conservation awareness</p>
+            </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 BirdVision. All rights reserved.</p>
+        </div>
+    </footer>
 
-  // Function to start video stream from camera
-  async function startCamera() {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      video.srcObject = stream;
-      // Hide error message and permission button if camera starts successfully
-      errorMessage.classList.add('hidden');
-      permissionBtn.classList.add('hidden');
-    } catch (err) {
-      console.error('Error accessing the camera: ', err);
-      // Show error message and permission button
-      errorMessage.textContent = 'Camera access is blocked. Please enable camera access to use this feature.';
-      errorMessage.classList.remove('hidden');
-      permissionBtn.classList.remove('hidden');
-    }
-  }
+    <script>
+        const video = document.getElementById('video');
+        const captureBtn = document.getElementById('captureBtn');
+        const ctx = canvas.getContext('2d');
+        const errorMessage = document.getElementById('errorMessage');
+        const permissionBtn = document.getElementById('permissionBtn');
 
-  permissionBtn.addEventListener('click', () => {
-    startCamera();
-  });
+        // Function to start video stream from camera
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                // Hide error message and permission button if camera starts successfully
+                errorMessage.classList.add('hidden');
+                permissionBtn.classList.add('hidden');
+            } catch (err) {
+                console.error('Error accessing the camera: ', err);
+                // Show error message and permission button
+                errorMessage.textContent = 'Camera access is blocked. Please enable camera access to use this feature.';
+                errorMessage.classList.remove('hidden');
+                permissionBtn.classList.remove('hidden');
+            }
+        }
 
-  // Capture image when the button is clicked and save it automatically
-  captureBtn.addEventListener('click', () => {
-    if (!video.srcObject) {
-        errorMessage.textContent = 'Please enable camera access first';
-        errorMessage.classList.remove('hidden');
-        return;
-    }
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const imageData = canvas.toDataURL('image/png');  // Get the image data as a base64 URL
+        permissionBtn.addEventListener('click', () => {
+            startCamera();
+        });
 
-    // Create a File object from the base64 image data
-    const byteString = atob(imageData.split(',')[1]);  // Decode base64 to binary
-    const arrayBuffer = new ArrayBuffer(byteString.length);  // Create an ArrayBuffer
-    const uint8Array = new Uint8Array(arrayBuffer);  // Create a Uint8Array
-    for (let i = 0; i < byteString.length; i++) {
-        uint8Array[i] = byteString.charCodeAt(i);  // Convert each character to byte
-    }
+        // Capture image when the button is clicked and save it automatically
+        captureBtn.addEventListener('click', () => {
+            if (!video.srcObject) {
+                errorMessage.textContent = 'Please enable camera access first';
+                errorMessage.classList.remove('hidden');
+                return;
+            }
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.toDataURL('image/png');  // Get the image data as a base64 URL
 
-    // Create a Blob object from the Uint8Array (for use in file functions)
-    const blob = new Blob([uint8Array], { type: 'image/png' });
-    // Create a File object from the Blob
-    const file = new File([blob], 'captured_image.png', { type: 'image/png' });
+            // Create a File object from the base64 image data
+            const byteString = atob(imageData.split(',')[1]);  // Decode base64 to binary
+            const arrayBuffer = new ArrayBuffer(byteString.length);  // Create an ArrayBuffer
+            const uint8Array = new Uint8Array(arrayBuffer);  // Create a Uint8Array
+            for (let i = 0; i < byteString.length; i++) {
+                uint8Array[i] = byteString.charCodeAt(i);  // Convert each character to byte
+            }
 
-    // Call the readURL function with the created File object
-    const fileInput = { files: [file] };  // Mocking the input.files property
-    readURL(fileInput);  // Pass the file to the readURL function
-});
+            // Create a Blob object from the Uint8Array (for use in file functions)
+            const blob = new Blob([uint8Array], { type: 'image/png' });
+            // Create a File object from the Blob
+            const file = new File([blob], 'captured_image.png', { type: 'image/png' });
 
-  window.onload = startCamera;
-</script>
+            // Call the readURL function with the created File object
+            const fileInput = { files: [file] };  // Mocking the input.files property
+            readURL(fileInput);  // Pass the file to the readURL function
+        });
 
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
-<script type="text/javascript">
-	// More API functions here:
-	// https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
+        window.onload = startCamera;
+    </script>
 
-	// the link to your model provided by Teachable Machine export panel
-	const URL = 'https://teachablemachine.withgoogle.com/models/-1r0AX8_Z/';
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+    <script type="text/javascript">
+        // More API functions here:
+        // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
 
-	let model, labelContainer, maxPredictions;
-	let globalBirdPrediction = ''; // Global variable to store the prediction
+        // the link to your model provided by Teachable Machine export panel
+        const URL = 'https://teachablemachine.withgoogle.com/models/-1r0AX8_Z/';
 
-	// Load the image model
-	async function init() {
-		const modelURL = URL + 'model.json';
-		const metadataURL = URL + 'metadata.json';
+        let model, labelContainer, maxPredictions;
+        let globalBirdPrediction = ''; // Global variable to store the prediction
 
-		// load the model and metadata
-		model = await tmImage.load(modelURL, metadataURL);
-		maxPredictions = model.getTotalClasses();
+        // Load the image model
+        async function init() {
+            const modelURL = URL + 'model.json';
+            const metadataURL = URL + 'metadata.json';
 
-		labelContainer = document.getElementById('label-container');
-		for (let i = 0; i < maxPredictions; i++) {
-			// and class labels
-			labelContainer.appendChild(document.createElement('div'));
-		}
-	}
+            // load the model and metadata
+            model = await tmImage.load(modelURL, metadataURL);
+            maxPredictions = model.getTotalClasses();
 
-	async function predict() {
-		// predict can take in an image, video or canvas html element
-		var image = document.getElementById('imagePreview');
-		const prediction = await model.predict(image, false);
-		prediction.sort(function(a, b) {return b.probability - a.probability});
-		let NUM_PREDICTIONS = 1;
-		
-		for (let i = 0; i < NUM_PREDICTIONS; i++) {
-			globalBirdPrediction = prediction[i].className; // Store the prediction
-			const classPrediction =
-				prediction[i].className + ': ' + prediction[i].probability.toFixed(2);
-			labelContainer.childNodes[i].innerHTML = classPrediction;
-		}
+            labelContainer = document.getElementById('label-container');
+            for (let i = 0; i < maxPredictions; i++) {
+                // and class labels
+                labelContainer.appendChild(document.createElement('div'));
+            }
+        }
 
-		// After prediction, send to chatbot
-		sendToChatbot(globalBirdPrediction);
-	}
+        async function predict() {
+            // predict can take in an image, video or canvas html element
+            var image = document.getElementById('imagePreview');
+            const prediction = await model.predict(image, false);
+            prediction.sort(function(a, b) {return b.probability - a.probability});
+            let NUM_PREDICTIONS = 1;
+            
+            for (let i = 0; i < NUM_PREDICTIONS; i++) {
+                globalBirdPrediction = prediction[i].className; // Store the prediction
+                const classPrediction =
+                    prediction[i].className + ': ' + prediction[i].probability.toFixed(2);
+                labelContainer.childNodes[i].innerHTML = classPrediction;
+            }
 
-	async function sendToChatbot(birdName) {
-		try {
-			// Show bird name immediately
-			document.getElementById('bird-name').textContent = `Detected Bird: ${birdName}`;
-			document.getElementById('bird-info-container').style.display = 'block';
-			
-			const response = await fetch('/chatbot/', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'X-Requested-With': 'XMLHttpRequest'
-				},
-				body: JSON.stringify({
-					prompt: `Tell me about this bird: ${birdName} Given the common name of the bird, provide the following details in a paragraph format:
+            // After prediction, send to chatbot
+            sendToChatbot(globalBirdPrediction);
+        }
+
+        async function sendToChatbot(birdName) {
+            try {
+                // Show bird name immediately
+                document.getElementById('bird-name').textContent = `Detected Bird: ${birdName}`;
+                document.getElementById('bird-info-container').style.display = 'block';
+                
+                const response = await fetch('/chatbot/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        prompt: `Tell me about this bird: ${birdName} Given the common name of the bird, provide the following details in a paragraph format:
 1. Conservation Status: Is the bird endangered, vulnerable, or of least concern? What factors are affecting its population?
 2. Climate Change Impact: How has or could climate change impact this species? This could include effects like habitat loss, changing migration patterns, or shifts in the food chain.
 3. Native Habitat: Where does this bird naturally reside? How might its habitat be affected by climate change, such as deforestation, rising sea levels, or altered weather patterns?
 4. Conservation Efforts: Are there any global or local conservation efforts underway to protect this bird? What can people do to help, such as supporting specific organizations or reducing their environmental impact?`,
-					history: [], 
-					isNewBird: true 
-				})
-			});
+                        history: [], 
+                        isNewBird: true 
+                    })
+                });
 
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
-			const data = await response.json();
-			
-			if (data.message) {
-				// Display the response on the current page
-				document.getElementById('bird-description').textContent = data.message;
-				
-				const initialConversation = [
-					{
-						role: 'User',
-						content: `Tell me about this bird: ${birdName} Given the common name of the bird, provide the following details in a paragraph format:
+                const data = await response.json();
+                
+                if (data.message) {
+                    // Display the response on the current page
+                    document.getElementById('bird-description').textContent = data.message;
+                    
+                    const initialConversation = [
+                        {
+                            role: 'User',
+                            content: `Tell me about this bird: ${birdName} Given the common name of the bird, provide the following details in a paragraph format:
 1. Conservation Status: Is the bird endangered, vulnerable, or of least concern? What factors are affecting its population?
 2. Climate Change Impact: How has or could climate change impact this species? This could include effects like habitat loss, changing migration patterns, or shifts in the food chain.
 3. Native Habitat: Where does this bird naturally reside? How might its habitat be affected by climate change, such as deforestation, rising sea levels, or altered weather patterns?
 4. Conservation Efforts: Are there any global or local conservation efforts underway to protect this bird? What can people do to help, such as supporting specific organizations or reducing their environmental impact?`
-					},
-					{
-						role: 'Assistant',
-						content: data.message
-					}
-				];
-				localStorage.setItem('currentBirdChat', JSON.stringify(initialConversation));
-			}
-		} catch (error) {
-			console.error('Error:', error);
-			document.getElementById('bird-description').textContent = 'Error getting bird information. Please try again.';
-		}
-	}
+                        },
+                        {
+                            role: 'Assistant',
+                            content: data.message
+                        }
+                    ];
+                    localStorage.setItem('currentBirdChat', JSON.stringify(initialConversation));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('bird-description').textContent = 'Error getting bird information. Please try again.';
+            }
+        }
 
-	function goToChat() {
-		window.location.href = '/chat/';
-	}
-</script>
+        function goToChat() {
+            window.location.href = '/chat/';
+        }
+    </script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script type="text/javascript">
-	function readURL(input) {
-		if (input.files && input.files[0]) {
-			var reader = new FileReader();
-			reader.onload = function (e) {
-				$('#imagePreview').attr('src', e.target.result);
-				// $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
-				$('#imagePreview').hide();
-				$('#imagePreview').fadeIn(650);
-			};
-			reader.readAsDataURL(input.files[0]);
-			init().then(() => {
-				predict();
-			});
-		}
-	}
-	$('#imageUpload').change(function () {
-		readURL(this);
-	});
-</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#imagePreview').attr('src', e.target.result);
+                    // $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
+                    $('#imagePreview').hide();
+                    $('#imagePreview').fadeIn(650);
+                };
+                reader.readAsDataURL(input.files[0]);
+                init().then(() => {
+                    predict();
+                });
+            }
+        }
+        $('#imageUpload').change(function () {
+            readURL(this);
+        });
+    </script>
 
-<style>
-	.chat-button {
-		background-color: #4CAF50;
-		color: white;
-		padding: 10px 20px;
-		border: none;
-		border-radius: 5px;
-		cursor: pointer;
-		font-size: 16px;
-	}
+    <style>
+        .chat-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
 
-	.chat-button:hover {
-		background-color: #45a049;
-	}
+        .chat-button:hover {
+            background-color: #45a049;
+        }
 
-	#bird-info-container {
-		background-color: #f9f9f9;
-		max-width: 800px;
-		margin: 20px auto;
-	}
+        #bird-info-container {
+            background-color: #f9f9f9;
+            max-width: 800px;
+            margin: 20px auto;
+        }
 
-	#bird-name {
-		font-weight: bold;
-		color: #333;
-		font-size: 18px;
-	}
+        #bird-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 18px;
+        }
 
-	#bird-description {
-		color: #666;
-		line-height: 1.6;
-		margin-top: 10px;
-	}
-</style>
-
+        #bird-description {
+            color: #666;
+            line-height: 1.6;
+            margin-top: 10px;
+        }
+    </style>
 </body>
 </html>
