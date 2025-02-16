@@ -93,5 +93,45 @@
   window.onload = startCamera;
 </script>
 
+<br>
+
+<button id="saveBtn" class="hidden">Save Image</button>
+
+<script>
+  const saveBtn = document.getElementById('saveBtn');
+
+  captureBtn.addEventListener('click', () => {
+    if (!video.srcObject) {
+      errorMessage.textContent = 'Please enable camera access first';
+      errorMessage.classList.remove('hidden');
+      return;
+    }
+
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const imageData = canvas.toDataURL('image/png');
+    capturedImage.src = imageData;
+
+    // Show the save button
+    saveBtn.classList.remove('hidden');
+  });
+
+  saveBtn.addEventListener('click', () => {
+    const imageData = canvas.toDataURL('image/png');
+
+    // Convert data URL to Blob
+    fetch(imageData)
+      .then(res => res.blob())
+      .then(blob => {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'captured_image.png';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+  });
+
+</script>
+
 </body>
 </html>
