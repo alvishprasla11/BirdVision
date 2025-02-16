@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .chat-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        .messages {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+        .message {
+            margin-bottom: 10px;
+        }
+        .message.user {
+            text-align: right;
+            color: blue;
+        }
+        .message.bot {
+            text-align: left;
+            color: green;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div id="messages" class="messages">
+            <div class="message bot">Hello! How can I assist you today?</div>
+        </div>
+        <input type="text" id="user-input" placeholder="Type your message..." />
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        let chatHistory = [];  // Array to store the chat history
+
+        async function sendMessage() {
+            const input = document.getElementById('user-input');
+            const message = input.value.trim();
+
+            if (message === '') return; // Do not send empty messages
+
+            // Display user message
+            displayMessage('user', message);
+
+            // Add user message to the chat history
+            chatHistory.push(`User: ${message}`);
+
+            // Send message to the backend (Django API)
+            try {
+                const response = await fetch('/chatbot/', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt: message })
+                });
+
+                const data = await response.json();
+
+                if (data.message) {
+                    // Display bot response
+                    displayMessage('bot', data.message);
+                    chatHistory.push(`Bot: ${data.message}`);
+                } else if (data.error) {
+                    // Handle errors
+                    displayMessage('bot', 'Sorry, there was an error processing your message.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                displayMessage('bot', 'An error occurred. Please try again later.');
+            }
+
+            input.value = '';  // Clear the input field
+        }
+
+        function displayMessage(sender, text) {
+            const messageContainer = document.getElementById('messages');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', sender);
+            messageElement.textContent = text;
+            messageContainer.appendChild(messageElement);
+
+            // Scroll to the bottom to show the latest message
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        }
+    </script>
+</body>
+</html>
