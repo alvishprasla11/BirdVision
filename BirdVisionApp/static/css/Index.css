@@ -173,6 +173,7 @@ body, html {
 }
 
 .option-card {
+    width: 100%;
     background-color: var(--container-bg);
     padding: 2rem;
     border-radius: 15px;
@@ -511,12 +512,21 @@ body, html {
     margin-top: 10px;
 }
 
-/* Add transition for fade effect */
+/* Update the image preview styles */
 #imagePreview {
-    transition: opacity 0.65s ease;
-    max-width: 100%;
-    height: auto;
+    width: 100%;
+    max-height: 100%;
     border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin: 0.5rem auto;
+    display: block;
+    object-fit: contain; /* This will maintain original aspect ratio */
+}
+
+/* Update the preview container */
+#preview-container {
+    width: 100%;
+    margin-top: 20px;
 }
 
 /* Add scroll progress indicator */
@@ -557,6 +567,10 @@ body, html {
         background-color: var(--primary-color);
         border-radius: 3px;
     }
+
+    #imagePreview {
+        height: 250px; /* Slightly smaller height on mobile */
+    }
 }
 
 .preview-section {
@@ -578,59 +592,85 @@ body, html {
     color: var(--primary-color);
 }
 
-#imagePreview {
-    max-width: 100%;
-    max-height: 300px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    margin: 0.5rem auto;
-    display: block;
-    object-fit: contain;
-}
-
+/* Modern upload section styling */
 .upload-option {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
+    padding: 2rem;
+    background: var(--container-bg);
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-.upload-btn {
-    display: inline-block;
-    padding: 0.8rem 1.5rem;
-    background-color: var(--primary-color);
-    color: white;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-bottom: 1rem;
-}
-
-.upload-btn:hover {
-    background-color: var(--primary-dark);
-    transform: translateY(-2px);
-}
-
-.upload-btn input {
-    display: none;
-}
-
-.submit-btn {
-    background-color: var(--primary-color);
-    color: white;
-    margin-top: 1rem;
-    padding: 0.8rem 2rem;
-    font-size: 1rem;
-}
-
-.submit-btn:hover {
-    background-color: var(--primary-dark);
-}
-
-.preview-section {
+/* File input container */
+.file-input-container {
+    position: relative;
+    width: 100%;
+    min-height: 200px;
+    border: 2px dashed var(--primary-color);
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1rem;
+    justify-content: center;
+    padding: 2rem;
+    background: rgba(46, 204, 113, 0.05);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.file-input-container:hover {
+    background: rgba(46, 204, 113, 0.1);
+    transform: translateY(-2px);
+}
+
+.file-input-container input[type="file"] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.file-input-container i {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.file-input-container p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+/* Preview section styling */
+#preview-container {
+    width: 100%;
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: var(--background-color);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+#preview-container h4 {
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#imagePreview {
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
 }
 
 .media-container {
@@ -697,4 +737,29 @@ body, html {
     40% { 
         transform: scale(1.0);
     }
+}
+
+.analyze-btn {
+    margin-top: 1rem;
+    padding: 0.8rem 2rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.analyze-btn:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.analyze-btn i {
+    font-size: 1.2rem;
 }

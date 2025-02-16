@@ -79,15 +79,14 @@
 
                 <div class="option-card upload-option">
                     <h3>Upload Image</h3>
-                    <div style="margin: 20px 0;">
-                        <input type="file" id="imageUpload" accept="image/*" style="margin-bottom: 10px;"/>
-                        <button id="submitUpload" style="padding: 10px 20px; margin-top: 10px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 5px;">
-                            Analyze Bird
-                        </button>
-                        <div id="preview-container" class="hidden" style="margin-top: 20px;">
-                            <h4>Image Preview</h4>
-                            <img id="imagePreview" alt="Bird Preview" style="max-width: 300px; margin: 10px 0;"/>
-                        </div>
+                    <div class="file-input-container">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Drag and drop your image here or click to browse</p>
+                        <input type="file" id="imageUpload" accept="image/*"/>
+                    </div>
+                    <div id="preview-container" class="hidden">
+                        <h4><i class="fas fa-image"></i> Image Preview</h4>
+                        <img id="imagePreview" alt="Bird Preview"/>
                     </div>
                 </div>
             </div>
@@ -337,7 +336,7 @@
 
         document.getElementById('imageUpload').addEventListener('change', function() {
             if (this.files && this.files[0]) {
-                // Use FileReader for preview too
+                // Show preview
                 const reader = new FileReader();
                 const previewContainer = document.getElementById('preview-container');
                 const imagePreview = document.getElementById('imagePreview');
@@ -345,15 +344,11 @@
                 reader.onload = function(e) {
                     imagePreview.src = e.target.result;
                     previewContainer.classList.remove('hidden');
+                    
+                    // Process image immediately after preview is shown
+                    readURL(document.getElementById('imageUpload'));
                 };
                 reader.readAsDataURL(this.files[0]);
-            }
-        });
-
-        document.getElementById('submitUpload').addEventListener('click', function() {
-            const input = document.getElementById('imageUpload');
-            if (input.files && input.files[0]) {
-                readURL(input);
             }
         });
     </script>
