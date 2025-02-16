@@ -24,14 +24,14 @@ Climate change is rapidly affecting global ecosystems, endangering various bird 
 
 ## 🚀 Getting Started
 
-### 1⃣ Clone the Repository
+### 1. Clone the Repository
 
 ```sh
 git clone https://github.com/alvishprasla11/BirdVision.git
 cd BirdVision
 ```
 
-### 2⃣ Set Up Virtual Environment
+### 2. Set Up Virtual Environment
 
 Create a virtual environment to manage dependencies:
 
@@ -50,17 +50,17 @@ Activate the virtual environment:
   birdvision\Scripts\activate.bat
   ```
 
-### 3⃣ Install Dependencies
+### 3. Install Dependencies
 
 ```sh
 pip install -r requirements.txt
 ```
 
-### 4⃣ Set Up Environment Variables
+### 4. Set Up Environment Variables
 
 Create a `.env` file in the project directory and add the required environment variables (shared via Discord).
 
-### 5⃣ Run the Application
+### 5. Run the Application
 
 Navigate to the Django app folder:
 
