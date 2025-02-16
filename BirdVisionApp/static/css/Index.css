@@ -278,6 +278,94 @@ body {
         width: 100%;
         aspect-ratio: 3/4;
     }
+
+    .features-grid {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        gap: 1rem;
+        padding: 1rem 0;
+        margin: 2rem -1rem;
+        padding-left: max(1rem, calc(50% - 140px));
+        scroll-padding-left: max(1rem, calc(50% - 140px));
+    }
+
+    .feature-card {
+        scroll-snap-align: center;
+        flex: 0 0 280px;
+        margin: 0;
+        padding: 1.5rem;
+        background-color: var(--container-bg);
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    /* Custom scrollbar for the horizontal scroll */
+    .features-grid::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .features-grid::-webkit-scrollbar-track {
+        background: var(--background-color);
+        border-radius: 3px;
+    }
+
+    .features-grid::-webkit-scrollbar-thumb {
+        background-color: var(--primary-color);
+        border-radius: 3px;
+    }
+
+    /* Add scroll indicators */
+    .section-content {
+        position: relative;
+        mask-image: linear-gradient(
+            to right,
+            transparent,
+            black 5%,
+            black 95%,
+            transparent
+        );
+        -webkit-mask-image: linear-gradient(
+            to right,
+            transparent,
+            black 5%,
+            black 95%,
+            transparent
+        );
+    }
+
+    .section-content::before,
+    .section-content::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        width: 40px;
+        height: 40px;
+        background: rgba(46, 204, 113, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .section-content::before {
+        left: 0;
+        background: linear-gradient(to right, var(--background-color), transparent);
+    }
+
+    .section-content::after {
+        right: 0;
+        background: linear-gradient(to left, var(--background-color), transparent);
+    }
+
+    .features-grid::-webkit-scrollbar {
+        display: none; /* Hide scrollbar but keep functionality */
+    }
 }
 
 /* Animations */
@@ -366,4 +454,28 @@ body {
     max-width: 100%;
     height: auto;
     border-radius: 10px;
+}
+
+/* Add scroll progress indicator */
+.scroll-progress {
+    position: relative;
+    width: 100%;
+    height: 2px;
+    background: var(--border-color);
+    margin-top: 1rem;
+    display: none;
+}
+
+.scroll-progress-bar {
+    position: absolute;
+    height: 100%;
+    background: var(--primary-color);
+    width: 0;
+    transition: width 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .scroll-progress {
+        display: block;
+    }
 }

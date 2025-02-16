@@ -52,6 +52,9 @@
                     <p>Ask questions and learn more about identified birds</p>
                 </div>
             </div>
+            <div class="scroll-progress">
+                <div class="scroll-progress-bar"></div>
+            </div>
         </div>
     </section>
 
@@ -344,5 +347,19 @@
             margin-top: 10px;
         }
     </style>
+
+    <script>
+        // Add scroll progress indicator
+        const featuresGrid = document.querySelector('.features-grid');
+        const scrollProgress = document.querySelector('.scroll-progress-bar');
+
+        if (featuresGrid && scrollProgress) {
+            featuresGrid.addEventListener('scroll', () => {
+                const scrollWidth = featuresGrid.scrollWidth - featuresGrid.clientWidth;
+                const scrolled = (featuresGrid.scrollLeft / scrollWidth) * 100;
+                scrollProgress.style.width = `${scrolled}%`;
+            });
+        }
+    </script>
 </body>
 </html>
