@@ -1,0 +1,25 @@
+video {
+    border: 1px solid black;
+  }
+  canvas {
+    display: none;
+  }
+  .error-message {
+    color: red;
+    margin: 10px 0;
+  }
+  #permissionBtn {
+    padding: 10px 20px;
+    margin: 10px 0;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  #permissionBtn:hover {
+    background-color: #45a049;
+  }
+  .hidden {
+    display: none;
+  }
