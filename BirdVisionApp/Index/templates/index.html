@@ -78,11 +78,17 @@
                 </div>
 
                 <div class="option-card upload-option">
-                    <h3><i class="fas fa-upload"></i> Upload Image</h3>
-                    <label for="imageUpload" class="upload-btn">
-                        <i class="fas fa-cloud-upload-alt"></i> Choose Image
-                        <input id="imageUpload" type="file" accept="image/*" />
-                    </label>
+                    <h3>Upload Image</h3>
+                    <div style="margin: 20px 0;">
+                        <input type="file" id="imageUpload" accept="image/*" style="margin-bottom: 10px;"/>
+                        <button id="submitUpload" style="padding: 10px 20px; margin-top: 10px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 5px;">
+                            Analyze Bird
+                        </button>
+                        <div id="preview-container" class="hidden" style="margin-top: 20px;">
+                            <h4>Image Preview</h4>
+                            <img id="imagePreview" alt="Bird Preview" style="max-width: 300px; margin: 10px 0;"/>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -161,14 +167,19 @@
                 return;
             }
 
-            // Create temporary canvas for capture
             const canvas = document.createElement('canvas');
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0);
             
-            // Initialize model and predict directly with canvas
+            // Show preview
+            const previewContainer = document.getElementById('preview-container');
+            const imagePreview = document.getElementById('imagePreview');
+            imagePreview.src = canvas.toDataURL('image/png');
+            previewContainer.classList.remove('hidden');
+            
+            // Initialize model and predict
             init().then(() => {
                 predict(canvas);
             });
@@ -208,6 +219,12 @@
 
         async function predict(canvas) {
             try {
+                const loadingSpinner = document.getElementById('loading-spinner');
+                const labelContainer = document.getElementById('label-container');
+                
+                // Show loading spinner
+                loadingSpinner.classList.remove('hidden');
+                
                 const prediction = await model.predict(canvas, false);
                 prediction.sort((a, b) => b.probability - a.probability);
                 let NUM_PREDICTIONS = 1;
@@ -219,10 +236,17 @@
                     labelContainer.childNodes[i].innerHTML = classPrediction;
                 }
 
+                // Hide loading spinner after prediction
+                loadingSpinner.classList.add('hidden');
+                
+                // Show results container
+                document.querySelector('.results-container').classList.remove('hidden');
+                
                 // After prediction, send to chatbot
                 sendToChatbot(globalBirdPrediction);
             } catch (error) {
                 console.error('Prediction error:', error);
+                loadingSpinner.classList.add('hidden');
             }
         }
 
@@ -294,17 +318,41 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0);
                     
+                    // Initialize model and predict
                     init().then(() => {
                         predict(canvas);
                     });
                 };
                 
-                img.src = URL.createObjectURL(input.files[0]);
+                // Use FileReader instead of URL.createObjectURL
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
             }
         }
 
         document.getElementById('imageUpload').addEventListener('change', function() {
-            readURL(this);
+            if (this.files && this.files[0]) {
+                // Use FileReader for preview too
+                const reader = new FileReader();
+                const previewContainer = document.getElementById('preview-container');
+                const imagePreview = document.getElementById('imagePreview');
+                
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    previewContainer.classList.remove('hidden');
+                };
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+
+        document.getElementById('submitUpload').addEventListener('click', function() {
+            const input = document.getElementById('imageUpload');
+            if (input.files && input.files[0]) {
+                readURL(input);
+            }
         });
     </script>
 
