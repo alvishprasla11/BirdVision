@@ -9,17 +9,34 @@
 </head>
 <body>
 
-<h1>Bird Vision</h1>
+<div class="main-container fade-in">
+    <h1>Bird Vision</h1>
 
-<div id="errorMessage" class="error-message hidden"></div>
-<button id="permissionBtn" class="hidden">Enable Camera Access</button>
+    <div id="errorMessage" class="error-message hidden"></div>
+    <button id="permissionBtn" class="button hidden">Enable Camera Access</button>
 
-<video id="video" width="640" height="480" autoplay></video>
-<br>
-<button id="captureBtn">Capture Image</button>
-<br><br>
-<canvas id="canvas" width="640" height="480"></canvas>
-<img id="capturedImage" alt="" width="640">
+    <div class="media-container">
+        <video id="video" width="640" height="480" autoplay></video>
+        <button id="captureBtn" class="button">Capture Image</button>
+        <canvas id="canvas" width="640" height="480"></canvas>
+    </div>
+
+    <label for="imageUpload" class="upload-btn">
+        Upload Bird Image
+        <input id="imageUpload" type="file" accept="image/*" />
+    </label>
+
+    <img id="imagePreview" class="hidden" alt="Bird Preview" />
+    
+    <div id="label-container"></div>
+    
+    <div id="bird-info-container" class="hidden">
+        <h3>Bird Information</h3>
+        <div id="bird-name"></div>
+        <div id="bird-description"></div>
+        <button onclick="goToChat()" class="button chat-button">Continue to Chat</button>
+    </div>
+</div>
 
 <script>
   const video = document.getElementById('video');
@@ -80,79 +97,159 @@
   window.onload = startCamera;
 </script>
 
-<br>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+<script type="text/javascript">
+	// More API functions here:
+	// https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
 
-<input id="imageUpload" type="file" />
+	// the link to your model provided by Teachable Machine export panel
+	const URL = 'https://teachablemachine.withgoogle.com/models/-1r0AX8_Z/';
 
-<br>
+	let model, labelContainer, maxPredictions;
+	let globalBirdPrediction = ''; // Global variable to store the prediction
 
+	// Load the image model
+	async function init() {
+		const modelURL = URL + 'model.json';
+		const metadataURL = URL + 'metadata.json';
 
-<img id="imagePreview" style="height: 300px;" />
-<br>
+		// load the model and metadata
+		model = await tmImage.load(modelURL, metadataURL);
+		maxPredictions = model.getTotalClasses();
 
-		<div id="label-container"></div>
-		<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
-		<script type="text/javascript">
-			// More API functions here:
-			// https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
+		labelContainer = document.getElementById('label-container');
+		for (let i = 0; i < maxPredictions; i++) {
+			// and class labels
+			labelContainer.appendChild(document.createElement('div'));
+		}
+	}
 
-			// the link to your model provided by Teachable Machine export panel
-			const URL = 'https://teachablemachine.withgoogle.com/models/-1r0AX8_Z/';
+	async function predict() {
+		// predict can take in an image, video or canvas html element
+		var image = document.getElementById('imagePreview');
+		const prediction = await model.predict(image, false);
+		prediction.sort(function(a, b) {return b.probability - a.probability});
+		let NUM_PREDICTIONS = 1;
+		
+		for (let i = 0; i < NUM_PREDICTIONS; i++) {
+			globalBirdPrediction = prediction[i].className; // Store the prediction
+			const classPrediction =
+				prediction[i].className + ': ' + prediction[i].probability.toFixed(2);
+			labelContainer.childNodes[i].innerHTML = classPrediction;
+		}
 
-			let model, labelContainer, maxPredictions;
+		// After prediction, send to chatbot
+		sendToChatbot(globalBirdPrediction);
+	}
 
-			// Load the image model
-			async function init() {
-				const modelURL = URL + 'model.json';
-				const metadataURL = URL + 'metadata.json';
-
-				// load the model and metadata
-				model = await tmImage.load(modelURL, metadataURL);
-				maxPredictions = model.getTotalClasses();
-
-				labelContainer = document.getElementById('label-container');
-				for (let i = 0; i < maxPredictions; i++) {
-					// and class labels
-					labelContainer.appendChild(document.createElement('div'));
-				}
-			}
-
-			async function predict() {
-				// predict can take in an image, video or canvas html element
-				var image = document.getElementById('imagePreview');
-				const prediction = await model.predict(image, false);
-                prediction.sort(function(a, b) {return b.probability - a.probability});
-                let NUM_PREDICTIONS = 1
-				for (let i = 0; i < NUM_PREDICTIONS; i++) {
-					const classPrediction =
-						prediction[i].className + ': ' + prediction[i].probability.toFixed(2);
-					labelContainer.childNodes[i].innerHTML = classPrediction;
-				}
-			}
-		</script>
-
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-		<script type="text/javascript">
-			function readURL(input) {
-				if (input.files && input.files[0]) {
-					var reader = new FileReader();
-					reader.onload = function (e) {
-						$('#imagePreview').attr('src', e.target.result);
-						// $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
-						$('#imagePreview').hide();
-						$('#imagePreview').fadeIn(650);
-					};
-					reader.readAsDataURL(input.files[0]);
-					init().then(() => {
-						predict();
-					});
-				}
-			}
-			$('#imageUpload').change(function () {
-				readURL(this);
+	async function sendToChatbot(birdName) {
+		try {
+			// Show bird name immediately
+			document.getElementById('bird-name').textContent = `Detected Bird: ${birdName}`;
+			document.getElementById('bird-info-container').style.display = 'block';
+			
+			const response = await fetch('/chatbot/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-Requested-With': 'XMLHttpRequest'
+				},
+				body: JSON.stringify({
+					prompt: `Tell me about this bird: ${birdName}`,
+					history: [], 
+					isNewBird: true 
+				})
 			});
-		</script>
+
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+
+			const data = await response.json();
+			
+			if (data.message) {
+				// Display the response on the current page
+				document.getElementById('bird-description').textContent = data.message;
+				
+				const initialConversation = [
+					{
+						role: 'User',
+						content: `Tell me about this bird: ${birdName}`
+					},
+					{
+						role: 'Assistant',
+						content: data.message
+					}
+				];
+				localStorage.setItem('currentBirdChat', JSON.stringify(initialConversation));
+			}
+		} catch (error) {
+			console.error('Error:', error);
+			document.getElementById('bird-description').textContent = 'Error getting bird information. Please try again.';
+		}
+	}
+
+	function goToChat() {
+		window.location.href = '/chat/';
+	}
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+	function readURL(input) {
+		if (input.files && input.files[0]) {
+			var reader = new FileReader();
+			reader.onload = function (e) {
+				$('#imagePreview').attr('src', e.target.result);
+				// $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
+				$('#imagePreview').hide();
+				$('#imagePreview').fadeIn(650);
+			};
+			reader.readAsDataURL(input.files[0]);
+			init().then(() => {
+				predict();
+			});
+		}
+	}
+	$('#imageUpload').change(function () {
+		readURL(this);
+	});
+</script>
+
+<style>
+	.chat-button {
+		background-color: #4CAF50;
+		color: white;
+		padding: 10px 20px;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+		font-size: 16px;
+	}
+
+	.chat-button:hover {
+		background-color: #45a049;
+	}
+
+	#bird-info-container {
+		background-color: #f9f9f9;
+		max-width: 800px;
+		margin: 20px auto;
+	}
+
+	#bird-name {
+		font-weight: bold;
+		color: #333;
+		font-size: 18px;
+	}
+
+	#bird-description {
+		color: #666;
+		line-height: 1.6;
+		margin-top: 10px;
+	}
+</style>
 
 </body>
 </html>

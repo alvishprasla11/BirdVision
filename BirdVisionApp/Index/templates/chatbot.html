@@ -57,61 +57,89 @@
         <div id="messages" class="messages">
             <div class="message bot">Hello! How can I assist you today?</div>
         </div>
-        <input type="text" id="user-input" placeholder="Type your message..." />
+        <input type="text" id="user-input" placeholder="Type your message..." onkeypress="handleKeyPress(event)"/>
         <button onclick="sendMessage()">Send</button>
     </div>
 
     <script>
-        let chatHistory = [];  // Array to store the chat history
+        let chatHistory = [];
+
+        // Load initial conversation if it exists
+        window.onload = function() {
+            const savedChat = localStorage.getItem('currentBirdChat');
+            if (savedChat) {
+                const parsedChat = JSON.parse(savedChat);
+                chatHistory = parsedChat;
+                
+                // Display the saved messages
+                parsedChat.forEach(message => {
+                    displayMessage(message.role === 'User' ? 'user' : 'bot', message.content);
+                });
+                
+                // Clear the storage after loading
+                localStorage.removeItem('currentBirdChat');
+            }
+        };
+
+        function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        }
 
         async function sendMessage() {
             const input = document.getElementById('user-input');
             const message = input.value.trim();
 
-            if (message === '') return; // Do not send empty messages
+            if (message === '') return;
 
             // Display user message
             displayMessage('user', message);
+            input.value = ''; // Clear input early for better UX
 
-            // Add user message to the chat history
-            chatHistory.push(`User: ${message}`);
-
-            // Send message to the backend (Django API)
             try {
                 const response = await fetch('/chatbot/', {
-                    method: 'GET',
+                    method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
                     },
-                    body: JSON.stringify({ prompt: chatHistory })
+                    body: JSON.stringify({
+                        prompt: message,
+                        history: chatHistory  // Send the entire chat history
+                    })
                 });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
                 const data = await response.json();
 
                 if (data.message) {
-                    // Display bot response
                     displayMessage('bot', data.message);
-                    chatHistory.push(`Bot: ${data.message}`);
-                } else if (data.error) {
-                    // Handle errors
-                    displayMessage('bot', 'Sorry, there was an error processing your message.');
+                    // Update chat history with the new exchange
+                    chatHistory.push({
+                        role: 'User',
+                        content: message
+                    });
+                    chatHistory.push({
+                        role: 'Assistant',
+                        content: data.message
+                    });
                 }
             } catch (error) {
                 console.error('Error:', error);
-                displayMessage('bot', 'An error occurred. Please try again later.');
+                displayMessage('bot', 'Sorry, there was an error processing your message. Please try again.');
             }
-
-            input.value = '';  // Clear the input field
         }
 
         function displayMessage(sender, text) {
             const messageContainer = document.getElementById('messages');
             const messageElement = document.createElement('div');
-            messageElement.classList.add('message', sender);
+            messageElement.classList.add('message', sender.toLowerCase());
             messageElement.textContent = text;
             messageContainer.appendChild(messageElement);
-
-            // Scroll to the bottom to show the latest message
             messageContainer.scrollTop = messageContainer.scrollHeight;
         }
     </script>
