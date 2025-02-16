@@ -78,7 +78,7 @@
                 </div>
 
                 <div class="option-card upload-option">
-                    <h3>Upload Image</h3>
+                    <h3>Or Upload Image</h3>
                     <div class="file-input-container">
                         <i class="fas fa-cloud-upload-alt"></i>
                         <p>Drag and drop your image here or click to browse</p>
@@ -132,24 +132,81 @@
 
         // Function to start video stream from camera
         async function startCamera() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: {
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
-                    } 
-                });
-                video.srcObject = stream;
-                video.play(); // Add explicit play call
-                // Hide error message and permission button if camera starts successfully
-                errorMessage.classList.add('hidden');
-                permissionBtn.classList.add('hidden');
-            } catch (err) {
-                console.error('Error accessing the camera: ', err);
-                // Show error message and permission button
-                errorMessage.textContent = 'Camera access is blocked. Please enable camera access to use this feature.';
-                errorMessage.classList.remove('hidden');
-                permissionBtn.classList.remove('hidden');
+            if (window.innerWidth <= 768) { // Mobile device
+                // Hide video element, error message, and permission button
+                video.style.display = 'none';
+                errorMessage.style.display = 'none';
+                permissionBtn.style.display = 'none';
+                
+                const mobileInput = document.createElement('input');
+                mobileInput.type = 'file';
+                mobileInput.accept = 'image/*';
+                mobileInput.capture = 'environment'; // This triggers the camera app
+                mobileInput.style.display = 'none';
+                
+                // Replace capture button functionality
+                captureBtn.innerHTML = '<i class="fas fa-camera"></i> Take Photo';
+                captureBtn.onclick = () => mobileInput.click();
+                
+                video.parentElement.appendChild(mobileInput);
+                
+                // Handle the image capture
+                mobileInput.onchange = function(e) {
+                    if (this.files && this.files[0]) {
+                        const reader = new FileReader();
+                        const previewContainer = document.getElementById('preview-container');
+                        const imagePreview = document.getElementById('imagePreview');
+                        
+                        reader.onload = function(e) {
+                            imagePreview.src = e.target.result;
+                            previewContainer.classList.remove('hidden');
+                            previewContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            
+                            const img = new Image();
+                            const canvas = document.createElement('canvas');
+                            
+                            img.onload = function() {
+                                canvas.width = img.width;
+                                canvas.height = img.height;
+                                const ctx = canvas.getContext('2d');
+                                ctx.drawImage(img, 0, 0);
+                                
+                                init().then(() => {
+                                    predict(canvas);
+                                });
+                            };
+                            img.src = e.target.result;
+                        };
+                        reader.readAsDataURL(this.files[0]);
+                    }
+                };
+            } else {
+                // Desktop - use live feed
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ 
+                        video: {
+                            facingMode: 'environment',
+                            width: { ideal: 1280 },
+                            height: { ideal: 720 },
+                            frameRate: { ideal: 30 }
+                        } 
+                    });
+                    video.style.display = 'block'; // Make sure video is visible
+                    video.srcObject = stream;
+                    await video.play();
+                    
+                    // Reset capture button to original state
+                    captureBtn.innerHTML = '<i class="fas fa-camera"></i> Capture Image';
+                    captureBtn.onclick = null; // Remove mobile click handler
+                    
+                    errorMessage.classList.add('hidden');
+                    permissionBtn.classList.add('hidden');
+                } catch (err) {
+                    console.error('Error accessing the camera: ', err);
+                    errorMessage.textContent = 'Camera access is blocked. Please enable camera access to use this feature.';
+                    errorMessage.classList.remove('hidden');
+                    permissionBtn.classList.remove('hidden');
+                }
             }
         }
 
@@ -334,7 +391,6 @@
 
         document.getElementById('imageUpload').addEventListener('change', function() {
             if (this.files && this.files[0]) {
-                // Show preview
                 const reader = new FileReader();
                 const previewContainer = document.getElementById('preview-container');
                 const imagePreview = document.getElementById('imagePreview');
@@ -343,7 +399,10 @@
                     imagePreview.src = e.target.result;
                     previewContainer.classList.remove('hidden');
                     
-                    // Process image immediately after preview is shown
+                    // Scroll to preview
+                    previewContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // Process image
                     readURL(document.getElementById('imageUpload'));
                 };
                 reader.readAsDataURL(this.files[0]);
