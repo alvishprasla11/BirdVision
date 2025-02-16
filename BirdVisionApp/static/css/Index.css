@@ -182,11 +182,7 @@ body, html {
 
 /* Results Container */
 .results-container {
-    margin-top: 2rem;
-    padding: 2rem;
-    background-color: var(--container-bg);
-    border-radius: 15px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    display: none;  /* This will completely hide the container */
 }
 
 /* Loading Spinner */

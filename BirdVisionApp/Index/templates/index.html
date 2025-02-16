@@ -91,14 +91,6 @@
                 </div>
             </div>
 
-            <div class="results-container">
-                <div id="loading-spinner" class="loading hidden">
-                    <div class="spinner"></div>
-                    <p>Analyzing image...</p>
-                </div>
-                <div id="label-container"></div>
-            </div>
-            
             <div id="bird-info-container" class="hidden">
                 <div class="info-header">
                     <i class="fas fa-feather"></i>
@@ -110,13 +102,20 @@
                     <i class="fas fa-comments"></i> Continue to Chat
                 </button>
             </div>
+
+            <div class="results-container" class="hidden">
+                <div id="loading-spinner" class="loading hidden">
+                    <div class="spinner"></div>
+                    <p>Analyzing image...</p>
+                </div>
+                <div id="label-container"></div>
+            </div>
         </div>
     </section>
 
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-content">
-            <div class="footer-section">
                 <h4>BirdVision</h4>
                 <p>AI-powered bird identification and conservation awareness</p>
             </div>
@@ -211,7 +210,6 @@
 
             labelContainer = document.getElementById('label-container');
             for (let i = 0; i < maxPredictions; i++) {
-                // and class labels
                 labelContainer.appendChild(document.createElement('div'));
             }
         }
@@ -221,7 +219,6 @@
                 const loadingSpinner = document.getElementById('loading-spinner');
                 const labelContainer = document.getElementById('label-container');
                 
-                // Show loading spinner
                 loadingSpinner.classList.remove('hidden');
                 
                 const prediction = await model.predict(canvas, false);
@@ -230,18 +227,16 @@
                 
                 for (let i = 0; i < NUM_PREDICTIONS; i++) {
                     globalBirdPrediction = prediction[i].className;
-                    const classPrediction =
-                        prediction[i].className + ': ' + prediction[i].probability.toFixed(2);
+                    const percentage = (prediction[i].probability * 100).toFixed(1);
+                    const classPrediction = `${prediction[i].className}: ${percentage}%`;
                     labelContainer.childNodes[i].innerHTML = classPrediction;
                 }
-
-                // Hide loading spinner after prediction
+                
+                // Store prediction globally for use in sendToChatbot
+                window.prediction = prediction;
+                
                 loadingSpinner.classList.add('hidden');
-                
-                // Show results container
                 document.querySelector('.results-container').classList.remove('hidden');
-                
-                // After prediction, send to chatbot
                 sendToChatbot(globalBirdPrediction);
             } catch (error) {
                 console.error('Prediction error:', error);
@@ -254,7 +249,10 @@
                 // Show loading state
                 const birdDescription = document.getElementById('bird-description');
                 birdDescription.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
-                document.getElementById('bird-name').textContent = `Detected Bird: ${birdName}`;
+                
+                // Update to show percentage
+                const percentage = (window.prediction[0].probability * 100).toFixed(1);
+                document.getElementById('bird-name').textContent = `Detected Bird: ${birdName} (${percentage}%)`;
                 document.getElementById('bird-info-container').style.display = 'block';
                 
                 const response = await fetch('/chatbot/', {
@@ -264,7 +262,7 @@
                         'X-Requested-With': 'XMLHttpRequest'
                     },
                     body: JSON.stringify({
-                        prompt: `Tell me about this bird: ${birdName}.provide the following details but keep the chat aspect alive:
+                        prompt: `Tell me about this bird: ${birdName} provide the following details but dont forget the key aspect that its chat not formal keep it simple and nice:
 1. Conservation Status: Is the bird endangered, vulnerable, or of least concern? What factors are affecting its population?
 2. Climate Change Impact: How has or could climate change impact this species? This could include effects like habitat loss, changing migration patterns, or shifts in the food chain.
 3. Native Habitat: Where does this bird naturally reside? How might its habitat be affected by climate change, such as deforestation, rising sea levels, or altered weather patterns?
