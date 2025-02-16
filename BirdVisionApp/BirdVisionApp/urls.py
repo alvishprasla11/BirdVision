@@ -22,4 +22,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('Index.urls', namespace='home')),  # Your home page app's URLs
+    path('chatbot/', include('chatbot.urls', namespace='chatbot'))
 ]
