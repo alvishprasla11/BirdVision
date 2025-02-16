@@ -288,7 +288,7 @@ body, html {
     .features-grid {
         width: 100%;
         margin: 0 auto;
-        padding: 1rem 0;
+        padding: 1rem calc(50% - 140px);
         display: flex;
         overflow-x: auto;
         scroll-snap-type: x mandatory;
@@ -298,10 +298,14 @@ body, html {
     }
 
     .feature-card {
-        flex: 0 0 80%;
-        margin: 0 10%;
+        flex: 0 0 280px;
+        margin: 0;
         scroll-snap-align: center;
         min-width: 280px;
+    }
+
+    .feature-card:last-child {
+        margin-right: calc(50% - 140px);
     }
 
     .section-content {
@@ -401,9 +405,17 @@ body, html {
 
 /* Add styles for smaller screens */
 @media (max-width: 480px) {
+    .features-grid {
+        padding: 1rem calc(50% - 160px);
+    }
+
     .feature-card {
-        flex: 0 0 85%;
-        margin: 0 7.5%;
+        flex: 0 0 320px;
+        min-width: 320px;
+    }
+
+    .feature-card:last-child {
+        margin-right: calc(50% - 160px);
     }
 
     .hero h1 {
