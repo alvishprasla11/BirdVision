@@ -5,7 +5,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EcoVision</title>
+  <title>Bird Vision</title>
   <style>
     video {
       border: 1px solid black;
@@ -90,6 +90,24 @@
     capturedImage.src = imageData;
   });
 
+  captureBtn.addEventListener('click', () => {
+  const imageData = canvas.toDataURL('image/png');
+
+  // Convert data URL to Blob
+  fetch(imageData)
+    .then(res => res.blob())
+    .then(blob => {
+      // Stop the webcam stream and hide the video element
+      if (video.srcObject) {
+        const tracks = video.srcObject.getTracks();
+        tracks.forEach(track => track.stop()); // Stop each track
+        video.srcObject = null;
+      }
+      video.classList.add('hidden'); // Hide the video element
+      captureBtn.classList.add('hidden'); // Hide the capture button
+    });
+});
+
   window.onload = startCamera;
 </script>
 
@@ -130,6 +148,8 @@
         document.body.removeChild(link);
       });
   });
+
+
 
 </script>
 
