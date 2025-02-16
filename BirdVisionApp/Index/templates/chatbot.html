@@ -83,7 +83,7 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ prompt: message })
+                    body: JSON.stringify({ prompt: chatHistory })
                 });
 
                 const data = await response.json();
