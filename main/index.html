@@ -1,0 +1,100 @@
+<DOCTYPE html>
+<html>
+<html lang = "en">
+<head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Responsive Bar</title>
+        <link rel="stylesheet" href="styles.css">
+        <style>
+            body {
+              font-family: Verdana;
+            }
+        </style>
+ 
+
+</head>
+
+<body>
+    <div class="title">
+        <h2  style="color:rgb(16, 115, 58);">
+            EcoVision
+        </h2>
+    </div>
+    <div class="container">
+        
+        <p>
+            Submit a photo of North American wildlife for our model to identify.
+        </p>
+    </div>
+    <div class="green-bar" id = "bar"></div>
+
+    <div class="cardinals">
+    <img src="medium.jpg" id="Cardinals" width="500" height="600">
+    </div>
+</body>
+
+<div id="box" class="input_box">
+    <input type="file" id="image_file">
+</div>
+
+<button id="news_button" class="news_button">
+        News
+</button>
+
+<button id="contact_button" class="contact_button">
+    Contact Us
+</button>
+
+<div id =field class="input_backing"></div>
+
+ <!--Making interatice elements decrease in opaciticty when hovered over-->
+ <script>
+    const field = document.getElementById("Cardinals");
+    Cardinals.addEventListener('mouseover', function() {
+        Cardinals.style.opacity = "0.95";});
+    Cardinals.addEventListener('mouseout', function() {
+        
+        Cardinals.style.opacity = "1.0";
+    });
+    contact_button.addEventListencer
+
+    const field_news = document.getElementById("news_button");
+    news_button.addEventListener('mouseover', function() {
+        news_button.style.opacity = "0.8";
+    });
+    news_button.addEventListener('mouseout', function() { 
+        news_button.style.opacity = "1.0";
+    });
+    news_button.addEventListencer
+
+    const field_contact = document.getElementById("contact_button");
+    contact_button.addEventListener('mouseover', function() {
+        contact_button.style.opacity = "0.8";
+    });
+    contact_button.addEventListener('mouseout', function() { 
+        contact_button.style.opacity = "1.0";
+    });
+    contact_button.addEventListencer
+</script>
+
+<!--Button pressed script-->
+<script>
+        const news_button = document.getElementById('news_button');
+        news_button.addEventListener('click', function() {
+            console.log('news_button was clicked!');
+        });
+        const contact_button = document.getElementById('contact_button');
+        contact_button.addEventListener('click', function() {
+            console.log('news_button was clicked!');
+            
+        });
+
+</script>
+
+
+
+
+    
+
+</html>
