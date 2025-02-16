@@ -70,7 +70,7 @@
                         <i class="fas fa-video"></i> Enable Camera
                     </button>
                     <div class="media-container">
-                        <video id="video" width="640" height="480" autoplay></video>
+                        <video id="video" autoplay></video>
                         <button id="captureBtn" class="button">
                             <i class="fas fa-camera"></i> Capture Image
                         </button>
@@ -252,7 +252,9 @@
 
         async function sendToChatbot(birdName) {
             try {
-                // Show bird name immediately
+                // Show loading state
+                const birdDescription = document.getElementById('bird-description');
+                birdDescription.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
                 document.getElementById('bird-name').textContent = `Detected Bird: ${birdName}`;
                 document.getElementById('bird-info-container').style.display = 'block';
                 
@@ -263,11 +265,7 @@
                         'X-Requested-With': 'XMLHttpRequest'
                     },
                     body: JSON.stringify({
-                        prompt: `Tell me about this bird: ${birdName} Given the common name of the bird, provide the following details in a paragraph format:
-1. Conservation Status: Is the bird endangered, vulnerable, or of least concern? What factors are affecting its population?
-2. Climate Change Impact: How has or could climate change impact this species? This could include effects like habitat loss, changing migration patterns, or shifts in the food chain.
-3. Native Habitat: Where does this bird naturally reside? How might its habitat be affected by climate change, such as deforestation, rising sea levels, or altered weather patterns?
-4. Conservation Efforts: Are there any global or local conservation efforts underway to protect this bird? What can people do to help, such as supporting specific organizations or reducing their environmental impact?`,
+                        prompt: `Tell me about this bird: ${birdName}...`,
                         history: [], 
                         isNewBird: true 
                     })
@@ -280,8 +278,8 @@
                 const data = await response.json();
                 
                 if (data.message) {
-                    // Display the response on the current page
-                    document.getElementById('bird-description').textContent = data.message;
+                    // Replace loading animation with response
+                    birdDescription.textContent = data.message;
                     
                     const initialConversation = [
                         {
@@ -360,6 +358,7 @@
         .chat-button {
             background-color: #4CAF50;
             color: white;
+            margin-top: 10px;
             padding: 10px 20px;
             border: none;
             border-radius: 5px;
