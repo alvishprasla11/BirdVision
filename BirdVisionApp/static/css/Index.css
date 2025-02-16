@@ -25,7 +25,12 @@ html {
     scroll-behavior: smooth;
 }
 
-body {
+body, html {
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
+    margin: 0;
+    padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--background-color);
     color: var(--text-primary);
@@ -36,6 +41,7 @@ body {
 .navbar {
     position: fixed;
     top: 0;
+    left: 0;
     width: 100%;
     background-color: var(--container-bg);
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -280,46 +286,84 @@ body {
     }
 
     .features-grid {
+        width: 100%;
+        margin: 0;
+        padding: 1rem 0;
         display: flex;
         overflow-x: auto;
         scroll-snap-type: x mandatory;
         scroll-behavior: smooth;
         -webkit-overflow-scrolling: touch;
         gap: 1rem;
-        padding: 1rem 0;
-        margin: 2rem -1rem;
-        padding-left: max(1rem, calc(50% - 140px));
-        scroll-padding-left: max(1rem, calc(50% - 140px));
     }
 
     .feature-card {
+        flex: 0 0 80%;
+        margin: 0 10%;
         scroll-snap-align: center;
-        flex: 0 0 280px;
+        min-width: 280px;
+    }
+
+    .section-content {
+        width: 100%;
         margin: 0;
-        padding: 1.5rem;
-        background-color: var(--container-bg);
-        border-radius: 15px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        padding: 0 1rem;
+        overflow: hidden;
     }
 
-    /* Custom scrollbar for the horizontal scroll */
-    .features-grid::-webkit-scrollbar {
-        height: 6px;
+    .about-section {
+        width: 100%;
+        margin: 0;
+        padding: 2rem 0;
+        overflow: hidden;
     }
 
-    .features-grid::-webkit-scrollbar-track {
-        background: var(--background-color);
-        border-radius: 3px;
+    .features-grid {
+        position: relative;
+        left: 0;
+        transform: none;
     }
 
-    .features-grid::-webkit-scrollbar-thumb {
-        background-color: var(--primary-color);
-        border-radius: 3px;
+    .main-container,
+    .hero-content,
+    .identify-section,
+    .results-container,
+    .nav-content {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        padding: 1rem;
+        overflow: hidden;
     }
 
-    /* Add scroll indicators */
+    .navbar {
+        width: 100%;
+        left: 0;
+    }
+
+    ::-webkit-scrollbar {
+        display: none;
+    }
+    
+    * {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .mobile-menu-btn {
+        display: block;
+        font-size: 1.5rem;
+        color: var(--primary-color);
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+
     .section-content {
         position: relative;
+        overflow: hidden;
+        width: 100%;
+        padding: 0;
         mask-image: linear-gradient(
             to right,
             transparent,
@@ -365,6 +409,26 @@ body {
 
     .features-grid::-webkit-scrollbar {
         display: none; /* Hide scrollbar but keep functionality */
+    }
+}
+
+/* Add styles for smaller screens */
+@media (max-width: 480px) {
+    .feature-card {
+        flex: 0 0 85%;
+        margin: 0 7.5%;
+    }
+
+    .hero h1 {
+        font-size: 2rem;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+
+    .section-content {
+        padding: 0;
     }
 }
 
