@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'BirdVisionApp',
     'Index',
     'chatbot',
-    'ImageRecognition',
 ]
 
 MIDDLEWARE = [
