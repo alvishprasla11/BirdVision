@@ -319,3 +319,51 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
+
+/* Add these styles to your existing CSS file */
+.chat-button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.chat-button:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+#bird-info-container {
+    background-color: var(--container-bg);
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+#bird-name {
+    font-weight: bold;
+    color: var(--text-primary);
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+#bird-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-top: 10px;
+}
+
+/* Add transition for fade effect */
+#imagePreview {
+    transition: opacity 0.65s ease;
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
