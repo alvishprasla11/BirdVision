@@ -22,12 +22,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = f"{os.getenv("Django-Secret-Key")}"
+SECRET_KEY = os.getenv("Django-Secret-Key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.herokuapp.com', '.render.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'https://birdvision-vamn.onrender.com']
 
 
 # Application definition
