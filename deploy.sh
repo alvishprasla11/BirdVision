@@ -1,3 +1,3 @@
 #DEPLOY COMMAND
 cd BirdVisionApp
-python -m gunicorn BirdVisionApp.asgi:application -k uvicorn.workers.UvicornWorker
+gunicorn BirdVisionApp.asgi:application --worker-class uvicorn.workers.UvicornWorker --timeout 600
