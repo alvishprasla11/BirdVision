@@ -12,5 +12,3 @@ python manage.py collectstatic --no-input
 
 # Apply any outstanding database migrations
 python manage.py migrate
-
-gunicorn BirdVisionApp.asgi:application --worker-class uvicorn.workers.UvicornWorker --timeout 600
