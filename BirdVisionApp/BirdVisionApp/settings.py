@@ -27,7 +27,7 @@ SECRET_KEY = os.getenv("Django-Secret-Key")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'https://birdvision-vamn.onrender.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'birdvision-vamn.onrender.com']
 
 
 # Application definition
