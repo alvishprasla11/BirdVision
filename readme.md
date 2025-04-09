@@ -90,13 +90,13 @@ The AI model was trained using **TensorFlow** and **Google Teachable Machine**, 
 
 ## 🐝 Contributing
 
-AFTER 20TH FEB 2O25 ONLY We welcome contributions! If you'd like to improve Bird Vision, feel free to fork the repo, make changes, and submit a pull request. 
+We welcome contributions! If you'd like to improve Bird Vision, please fork the repo, make changes, and submit a pull request. 
 
 ---
 
 ## 🌟 License
 
-AFTER 20TH FEB 2025 this project will be open-source and will be available under the **MIT License** for now its under **AGPL-3.0 License**. 
+This project will be open-source and will soon be available under the **MIT License**. For now, it's under **AGPL-3.0 License**. 
 
 ---
 
