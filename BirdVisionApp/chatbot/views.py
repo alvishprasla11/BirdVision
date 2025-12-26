@@ -1,10 +1,8 @@
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
 from .src.chatbot import gemini
 from django.views.decorators.csrf import csrf_exempt
 import json
-
-# Create your views here.
 
 @csrf_exempt
 def chatbot(request):
@@ -21,16 +19,25 @@ def chatbot(request):
             # Construct the full prompt with chat history
             full_prompt = ""
             if is_new_bird:
-                # For new bird detection, just use the current message
                 full_prompt = current_message
             else:
-                # For ongoing conversation, include chat history
                 for message in chat_history:
                     full_prompt += f"{message['role']}: {message['content']}\n"
                 full_prompt += f"User: {current_message}"
             
-            response = gemini(full_prompt)
-            return JsonResponse({"message": response})
+            # Return streaming response
+            def stream_generator():
+                for chunk in gemini(full_prompt):
+                    yield f"data: {json.dumps({'chunk': chunk})}\n\n"
+            
+            response = StreamingHttpResponse(
+                stream_generator(),
+                content_type='text/event-stream'
+            )
+            response['Cache-Control'] = 'no-cache'
+            response['X-Accel-Buffering'] = 'no'
+            return response
+            
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
     

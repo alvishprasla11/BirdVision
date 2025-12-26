@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; font-src 'self' https://cdnjs.cloudflare.com; connect-src 'self' https://generativelanguage.googleapis.com;">
     <title>BirdVision Chat - Learn More About Birds</title>
     <link rel="icon" href="{% static 'assets/logo.png' %}" type="image/x-icon">
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -92,8 +93,13 @@
             displayMessage('user', message);
             input.value = '';
 
-            // Show loading message
-            const loadingMessage = displayMessage('bot', 'loading');
+            // Create empty bot message for streaming
+            const messageContainer = document.getElementById('messages');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', 'bot');
+            messageElement.textContent = '';
+            messageContainer.appendChild(messageElement);
+            messageContainer.scrollTop = messageContainer.scrollHeight;
             
             try {
                 const response = await fetch('/chatbot/', {
@@ -108,30 +114,42 @@
                     })
                 });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let fullResponse = '';
 
-                const data = await response.json();
-                
-                // Replace loading message with actual response
-                if (data.message) {
-                    loadingMessage.remove();  // Remove loading message
-                    displayMessage('bot', data.message);
-                    chatHistory.push({
-                        role: 'User',
-                        content: message
-                    });
-                    chatHistory.push({
-                        role: 'Assistant',
-                        content: data.message
-                    });
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+                    
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = JSON.parse(line.slice(6));
+                            fullResponse += data.chunk;
+                            messageElement.textContent = fullResponse;
+                            messageContainer.scrollTop = messageContainer.scrollHeight;
+                        }
+                    }
                 }
+                
+                // Update chat history
+                chatHistory.push({
+                    role: 'User',
+                    content: message
+                });
+                chatHistory.push({
+                    role: 'Assistant',
+                    content: fullResponse
+                });
+                
             } catch (error) {
                 console.error('Error:', error);
-                loadingMessage.remove();  // Remove loading message
-                displayMessage('bot', 'Sorry, there was an error processing your message. Please try again.');
+                messageElement.textContent = 'Error getting response. Please try again.';
             }
+
         }
     </script>
 </body>
