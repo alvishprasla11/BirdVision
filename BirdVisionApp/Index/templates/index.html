@@ -395,7 +395,7 @@
                         if (line.startsWith('data: ')) {
                             const data = JSON.parse(line.slice(6));
                             fullResponse += data.chunk;
-                            birdDescription.textContent = fullResponse;
+                            birdDescription.innerHTML = formatMarkdown(fullResponse);
                         }
                     }
                 }
@@ -417,6 +417,11 @@
                 console.error('Error:', error);
                 document.getElementById('bird-description').textContent = 'Error getting bird information. Please try again.';
             }
+        }
+
+        function formatMarkdown(text) {
+            // Convert **text** to <strong>text</strong>
+            return text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
         }
 
         function goToChat() {

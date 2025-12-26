@@ -84,6 +84,11 @@
             return messageElement;  // Return element for updating later
         }
 
+        function formatMarkdown(text) {
+            // Convert **text** to <strong>text</strong>
+            return text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        }
+
         async function sendMessage() {
             const input = document.getElementById('user-input');
             const message = input.value.trim();
@@ -129,7 +134,7 @@
                         if (line.startsWith('data: ')) {
                             const data = JSON.parse(line.slice(6));
                             fullResponse += data.chunk;
-                            messageElement.textContent = fullResponse;
+                            messageElement.innerHTML = formatMarkdown(fullResponse);
                             messageContainer.scrollTop = messageContainer.scrollHeight;
                         }
                     }
